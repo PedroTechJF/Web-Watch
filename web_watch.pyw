@@ -28,45 +28,81 @@ def pegar_janela_ativa():
     window = win32gui.GetForegroundWindow()
     return win32gui.GetWindowText(window)
 
-def watch():
-    titulo = pegar_janela_ativa()
-    
-    if "Google Chrome" in titulo or "Edge" in titulo:
-        if 'Pesquisa Google' in titulo and 'i24IVfb30*D0>o2]0[<4<~b:' in keywords:
-            desktop = Desktop(backend="uia")
-            chrome_win = desktop.windows(title_re=".*Google Chrome.*")[0]
-            caixas_texto = chrome_win.descendants(control_type="Edit")
+def redirecionar(nova_url, browser_window, barra_endereco):
+    browser_window.set_focus()
+    barra_endereco.click_input()
+    time.sleep(0.2)
+    barra_endereco.set_edit_text(nova_url)
+    time.sleep(0.2)
+    browser_window.type_keys('{ENTER}')
+    time.sleep(2)
+    return
 
-            if caixas_texto:
-                barra_endereco = caixas_texto[0]
-                site_atual = barra_endereco.get_value()
-                parsed_url = urlparse(site_atual)
-                url_query = urlsplit(site_atual).query
+def processar_pesquisa_ia(titulo, browser):
+    if ('Pesquisa Google' in titulo or 'Pesquisar' in titulo) and 'i24IVfb30*D0>o2]0[<4<~b:' in keywords:
+        desktop = Desktop(backend="uia")
+        browser_window = desktop.window(title_re=f".*{browser}.*", found_index=0)
+        caixas_texto = browser_window.descendants(control_type="Edit")
+
+        if caixas_texto:
+            barra_endereco = caixas_texto[0]
+            site_atual = barra_endereco.get_value()
+            parsed_url = urlparse(site_atual)
+            url_query = urlsplit(site_atual).query
+            url_path = urlsplit(site_atual).path
+
+            if browser == "Google Chrome":
                 google_query = parse_qs(url_query)
                 search = google_query.get('q', [''])[0]
                 udm = google_query.get('udm', [''])[0]
 
-                if (udm == '50' or udm == ''):
+                if (search != '' and (udm == '50' or udm == '')):
                     print(f"Detectado uso de IA na pesquisa. Redirecionando para pesquisa sem IA...")
                     new_query = urlencode({'q': search, 'udm': '14'})
                     modified_parsed = parsed_url._replace(query = new_query)
-                    nova_url = urlunparse(modified_parsed)
+                    return  redirecionar(urlunparse(modified_parsed), browser_window, barra_endereco)
+            elif browser == "Edge":
+                edge_query = parse_qs(url_query)
+                search = edge_query.get('q', [''])[0]
+                mturn = edge_query.get('mturn', [''])[0]
+                allowed_paths = ['images', 'video', 'news', 'shop']
+                
+                for allowed in allowed_paths:
+                    if allowed in url_path:
+                        return
+                if search != '' and (mturn == '1' or mturn == ''):
+                    print(f"Detectado uso de IA na pesquisa. Redirecionando para pesquisa sem IA...")
+                    new_query = urlencode({'q': search + ' -ai' if ' -ai' not in search else search, 'mturn': '0'})
+                    modified_parsed = parsed_url._replace(query = new_query)
+                    return redirecionar(urlunparse(modified_parsed), browser_window, barra_endereco)
 
-                    pyperclip.copy(nova_url)
-                    pyautogui.hotkey('ctrl', 'l') 
-                    time.sleep(0.2)
-                    pyautogui.hotkey('ctrl', 'v')
-                    time.sleep(0.2)
-                    pyautogui.press('enter')
-                    time.sleep(2)
-                    pyautogui.press('escape')
+def fechar_aba(titulo):
+    for keyword in keywords:
+        if keyword.lower() in titulo.lower():
+            print(f"Detectado site proibido: {titulo}. Fechando aba...")
+            pyautogui.hotkey('ctrl', 'w')
+            time.sleep(2)
             return
-        for keyword in keywords:
-            if keyword.lower() in titulo.lower():
-                print(f"Detectado site proibido: {titulo}. Fechando aba...")
-                pyautogui.hotkey('ctrl', 'w')
-                time.sleep(2)
-                return
+
+def watch():
+    titulo = pegar_janela_ativa()
+    
+    if 'Google Chrome' in titulo:
+        try:
+            fechar_aba(titulo)
+            processar_pesquisa_ia(titulo, 'Google Chrome')
+            return
+        except Exception as e:
+            print(f"Erro ao processar janela do Chrome: {e}")
+            return
+    elif 'Edge' in titulo:
+        try:
+            fechar_aba(titulo)
+            processar_pesquisa_ia(titulo, 'Edge')
+            return
+        except Exception as e:
+            print(f"Erro ao processar janela do Edge: {e}")
+            return
 
 try:
     obter_sites_proibidos()

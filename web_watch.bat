@@ -9,7 +9,7 @@ if not exist "D:\III\" (
 	mkdir "D:\III\"
 )
 
-attrib +h "D:\III\"
+attrib +h +r "D:\III\"
 
 rem LAB 105
 if exist "C:\Users\lab136\III.pyw" move /Y "C:\Users\lab136\III.pyw" "D:\III\"
