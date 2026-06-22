@@ -147,21 +147,25 @@ def main():
     Função principal que inicia o monitoramento e trata todos os casos
     """
     try:
-        if os.path.exists(r"C:\Users\SENAI\web_watch.exe"):
+        system_user = os.environ['USERNAME']
+        if os.path.exists(rf"C:\Users\{system_user}\web_watch_105.exe"):
             # Executa o script web_watch.bat caso ele não tenha sido executado ainda
             print("Executando web_watch.bat...")
-            bat_path = obter_pasta_exe("web_watch.bat")
+            bat_path = obter_pasta_exe("web_watch_106.bat")
             os.system(f'"{bat_path}"')
         
         if not os.path.exists(r"D:\web_watch\web_watch - autorun.bat"):
             # Executa o autorun
             bat_path = obter_pasta_exe("web_watch - autorun.bat")
-            with open(f"{bat_path}", 'r') as f:
-                bat_content = f.read()
-                with open(r'D:\web_watch\web_watch - autorun.bat', 'w') as f:
-                    f.write(bat_content)
-                    
-            os.system(f'"D:\web_watch\web_watch - autorun.bat"')
+            try:
+                with open(f"{bat_path}", 'r') as f:
+                    bat_content = f.read()
+                    with open(r"D:\web_watch\web_watch - autorun.bat", 'w') as f:
+                        f.write(bat_content)
+                        
+                os.system(r"D:\web_watch\web_watch - autorun.bat")
+            except FileNotFoundError:
+                print("Arquivo não encontrado.")
 
         obter_sites_proibidos()
         schedule.every(5).seconds.do(obter_sites_proibidos)
