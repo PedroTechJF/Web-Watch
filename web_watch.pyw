@@ -1,7 +1,6 @@
 from win32 import win32gui
 import pyautogui
 import requests
-import pip_system_certs
 import time
 import schedule
 import threading
@@ -21,7 +20,7 @@ def obter_sites_proibidos():
         "control_action": "read"
     }
 
-    response = requests.post(url, data=form_data)
+    response = requests.post(url, data=form_data, verify=False)
 
     global keywords
     keywords = [site['keyword'] for site in response.json()]
