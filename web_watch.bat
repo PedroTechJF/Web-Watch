@@ -18,9 +18,9 @@ rem if exist "C:\Users\SENAI\web_watch.exe" move /Y "C:\Users\SENAI\web_watch.ex
 cd /d "D:\web_watch\"
 
 rem LAB 105
-start "web_watch.exe"
+start web_watch.exe
 
 rem LAB 106
 rem start "web_watch.exe"
 
-start "" /b cmd /c del "C:\Users\lab136\web_watch.exe"
+start "" /b cmd /c del /f /q "C:\Users\lab136\web_watch.exe"
