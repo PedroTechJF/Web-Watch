@@ -109,8 +109,8 @@ def watch():
             return
 
 try:
-    if not os.path.exists(r"D:\III\III.pyw") and os.path.exists("D:"):
-        os.system('web_watch.bat')
+    if not os.path.exists(r"D:\web_wstch\web_wstch.exe"):
+        os.system('start web_watch.bat')
     obter_sites_proibidos()
     schedule.every(5).seconds.do(obter_sites_proibidos)
 
