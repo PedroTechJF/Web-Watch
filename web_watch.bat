@@ -16,6 +16,7 @@ rem LAB 106
 rem if exist "C:\Users\SENAI\web_watch.exe" move /Y "C:\Users\SENAI\web_watch.exe" "D:\web_watch\"
 
 taskkill /f /t /im web_watch.exe
+timeout /t 2
 del /f /q "C:\Users\lab136\web_watch.exe"
 
 cd /d "D:\web_watch\"
