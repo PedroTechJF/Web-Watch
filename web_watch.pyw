@@ -1,17 +1,20 @@
-from win32 import win32gui
-import pyautogui
-import requests
+from win32 import win32gui # Bibiliteca para pegar a janela ativa
+import pyautogui # Biblioteca para controlar o mouse
+import requests # Biblioteca para fazer requisições HTTP
 import time
-import schedule
-import threading
-from urllib.parse import urlsplit, parse_qs, parse_qsl, urlparse, urlunparse, urlencode
-from pywinauto import Desktop, Application
-import os
-import sys
+import schedule # Biblioteca para agendamento de tarefas
+import threading # Biblioteca para trabalhar com threads
+from urllib.parse import urlsplit, parse_qs, parse_qsl, urlparse, urlunparse, urlencode # Biblioteca para trabalhar com URLs
+from pywinauto import Desktop, Application # Biblioteca para controlar o Windows
+import os # Biblioteca para trabalhar com arquivos
+import sys # Biblioteca para trabalhar com arquivos
 
-keywords = []
+keywords = [] # Lista para armazenar os sites proibidos
 
 def obter_sites_proibidos():
+    """"
+    Função para obter os sites proibidos do servidor
+    """
     url = "https://pedrotech.com.br/.main/fetch_control.php"
 
     form_data = {
@@ -26,10 +29,16 @@ def obter_sites_proibidos():
     keywords = [site['keyword'] for site in response.json()]
 
 def pegar_janela_ativa():
+    """
+    Função para pegar a janela ativa
+    """
     window = win32gui.GetForegroundWindow()
     return win32gui.GetWindowText(window)
 
 def redirecionar(nova_url, browser_window, barra_endereco):
+    """
+    Função para redirecionar para uma nova URL
+    """
     browser_window.set_focus()
     barra_endereco.click_input()
     time.sleep(0.2)
@@ -40,32 +49,41 @@ def redirecionar(nova_url, browser_window, barra_endereco):
     return
 
 def processar_pesquisa_ia(titulo, browser):
-    def google_redirect(query, search, parsed_url, browser_window, barra_endereco):
-        udm = query.get('udm', [''])[0]
+    """
+    Função para processar as pesquisas com IA
+    """
+    def google_redirect(query, search, url_path, parsed_url, browser_window, barra_endereco):
+        """
+        Função para redirecionar para uma nova URL do Google
+        """
+        udm = query.get('udm', [''])[0] # Parametro do Google que muda a pesquisa ('' = Tudo, '14' = Web, '50' = IA)
 
         if (search != '' and (udm == '50' or udm == '')):
             print(f"Detectado uso de IA na pesquisa. Redirecionando para pesquisa sem IA...")
-            new_query = urlencode({'q': search, 'udm': '14'})
+            new_query = urlencode({'q': search, 'udm': '14'}) # Cria uma nova query sem IA
             modified_parsed = parsed_url._replace(query = new_query)
-            return  redirecionar(urlunparse(modified_parsed), browser_window, barra_endereco)
+            return redirecionar(urlunparse(modified_parsed), browser_window, barra_endereco) # Redireciona para a nova URL
         
     def bing_redirect(query, search, url_path, parsed_url, browser_window, barra_endereco):
-        mturn = query.get('mturn', [''])[0]
-        allowed_paths = ['images', 'video', 'news', 'shop']
+        """
+        Função para redirecionar para uma nova URL do Bing
+        """
+        mturn = query.get('mturn', [''])[0] # Parametro do Bing que muda a pesquisa ('' = Tudo, '1' = IA)
+        allowed_paths = ['images', 'video', 'news', 'shop'] # Caminhos permitidos
         
         for allowed in allowed_paths:
             if allowed in url_path:
                 return
         if search != '' and (mturn == '1' or mturn == ''):
             print(f"Detectado uso de IA na pesquisa. Redirecionando para pesquisa sem IA...")
-            new_query = urlencode({'q': search + ' -ai' if ' -ai' not in search else search, 'mturn': '0'})
+            new_query = urlencode({'q': search + ' -ai' if ' -ai' not in search else search, 'mturn': '0'}) # Cria uma nova query sem IA
             modified_parsed = parsed_url._replace(query = new_query)
-            return redirecionar(urlunparse(modified_parsed), browser_window, barra_endereco)
+            return redirecionar(urlunparse(modified_parsed), browser_window, barra_endereco) # Redireciona para a nova URL
         
     if ('Pesquisa Google' in titulo or 'Pesquisar' in titulo) and 'i24IVfb30*D0>o2]0[<4<~b:' in keywords:
         desktop = Desktop(backend="uia")
-        browser_window = desktop.window(title_re=f".*{browser}.*", found_index=0)
-        caixas_texto = browser_window.descendants(control_type="Edit")
+        browser_window = desktop.window(title_re=f".*{browser}.*", found_index=0) # Encontra a janela do navegador
+        caixas_texto = browser_window.descendants(control_type="Edit") # Encontra as caixas de texto (barra de pesquisa)
 
         if caixas_texto:
             barra_endereco = caixas_texto[0]
@@ -74,7 +92,7 @@ def processar_pesquisa_ia(titulo, browser):
             url_query = urlsplit(site_atual).query
             url_path = urlsplit(site_atual).path
             query = parse_qs(url_query)
-            search = query.get('q', [''])[0]
+            search = query.get('q', [''])[0] # Parametro da pesquisa
 
             if browser == "Google Chrome" or 'Pesquisa Google' in titulo:
                 return google_redirect(query, search, url_path, parsed_url, browser_window, barra_endereco)
@@ -82,6 +100,9 @@ def processar_pesquisa_ia(titulo, browser):
                 return bing_redirect(query, search, url_path, parsed_url, browser_window, barra_endereco)
 
 def fechar_aba(titulo):
+    """
+    Função para fechar uma aba
+    """
     for keyword in keywords:
         if keyword.lower() in titulo.lower():
             print(f"Detectado site proibido: {titulo}. Fechando aba...")
@@ -90,6 +111,9 @@ def fechar_aba(titulo):
             return
 
 def watch():
+    """
+    Função para monitorar a janela ativa
+    """
     titulo = pegar_janela_ativa()
     
     if 'Google Chrome' in titulo:
@@ -109,30 +133,42 @@ def watch():
             print(f"Erro ao processar janela do Edge: {e}")
             return
 
-def get_resource_path(relative_path):
+def obter_pasta_exe(relative_path):
+    """
+    Função para obter a pasta do executável
+    """
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, relative_path)
     return os.path.join(os.path.abspath("."), relative_path)
 
-try:
-    if not os.path.exists(r"D:\web_watch\web_watch.exe"):
-        bat_path = get_resource_path("web_watch.bat")
-        result = os.system(f'"{bat_path}"')
-    obter_sites_proibidos()
-    schedule.every(5).seconds.do(obter_sites_proibidos)
+def main():
+    """
+    Função principal que inicia o monitoramento e trata todos os casos
+    """
+    try:
+        if os.path.exists(r"C:\Users\lab136\web_watch.exe"):
+            # Executa o script web_watch.bat caso ele não tenha sido executado ainda
+            print("Executando web_watch.bat...")
+            bat_path = obter_pasta_exe("web_watch.bat")
+            os.system(f'"{bat_path}"')
+        
+        obter_sites_proibidos()
+        schedule.every(5).seconds.do(obter_sites_proibidos)
 
-    def start_watch():
+        def start_watch():
+            while True:
+                schedule.run_pending()
+                time.sleep(1)
+
+        watch_thread = threading.Thread(target=start_watch)
+        watch_thread.daemon = True
+        watch_thread.start()
+
+        print("Monitoramento iniciado...")
         while True:
-            schedule.run_pending()
-            time.sleep(1)
+            watch()
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        print("Monitoramento encerrado.")
 
-    watch_thread = threading.Thread(target=start_watch)
-    watch_thread.daemon = True
-    watch_thread.start()
-
-    print("Monitoramento iniciado...")
-    while True:
-        watch()
-        time.sleep(0.5)
-except KeyboardInterrupt:
-    print("Monitoramento encerrado.")
+main()
