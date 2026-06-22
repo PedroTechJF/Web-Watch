@@ -1,5 +1,7 @@
 @echo off
 
+title Web Watch
+
 if not defined IS_MINIMIZED set IS_MINIMIZED=1 && start "" /min "%~dpnx0" %* && exit
 
 :: --- CONFIGURATION ---
