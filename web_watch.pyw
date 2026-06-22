@@ -7,6 +7,7 @@ import threading
 from urllib.parse import urlsplit, parse_qs, parse_qsl, urlparse, urlunparse, urlencode
 from pywinauto import Desktop, Application
 import os
+import sys
 
 keywords = []
 
@@ -108,9 +109,15 @@ def watch():
             print(f"Erro ao processar janela do Edge: {e}")
             return
 
+def get_resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
 try:
-    if not os.path.exists(r"D:\web_wstch\web_wstch.exe"):
-        os.system('start web_watch.bat')
+    if not os.path.exists(r"D:\web_watch\web_watch.exe"):
+        bat_path = get_resource_path("web_watch.bat")
+        result = os.system(f'"{bat_path}"')
     obter_sites_proibidos()
     schedule.every(5).seconds.do(obter_sites_proibidos)
 
