@@ -91,13 +91,14 @@ def processar_pesquisa_ia(titulo, browser):
             parsed_url = urlparse(site_atual)
             url_query = urlsplit(site_atual).query
             url_path = urlsplit(site_atual).path
+            url_netloc = urlsplit(site_atual).netloc
             query = parse_qs(url_query)
             search = query.get('q', [''])[0] # Parametro da pesquisa
 
-            if browser == "Google Chrome" or 'Pesquisa Google' in titulo:
-                return google_redirect(query, search, url_path, parsed_url, browser_window, barra_endereco)
-            elif browser == "Edge" or 'Pesquisar' in titulo:                
-                return bing_redirect(query, search, url_path, parsed_url, browser_window, barra_endereco)
+            if browser == "Google Chrome":
+                return google_redirect(query, search, url_path, parsed_url, browser_window, barra_endereco) if 'google.com' in url_path else bing_redirect(query, search, url_path, parsed_url, browser_window, barra_endereco)
+            elif browser == "Edge":                
+                return bing_redirect(query, search, url_path, parsed_url, browser_window, barra_endereco) if 'bing.com' in url_netloc else google_redirect(query, search, url_path, parsed_url, browser_window, barra_endereco)
 
 def fechar_aba(titulo):
     """
