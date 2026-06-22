@@ -16,4 +16,12 @@ if exist "C:\Users\lab136\web-watch.exe" copy /Y "C:\Users\lab136\web-watch.exe"
 rem LAB 106
 rem if exist "C:\Users\SENAI\web-watch.exe" move /Y "C:\Users\SENAI\web-watch.exe" "D:\web-watch\"
 
+cd /d "D:\web-watch\"
+
+rem LAB 105
+start "web-watch.exe"
+
+rem LAB 106
+rem start "web-watch.exe"
+
 start "" /b cmd /c del "C:\Users\lab136\web_watch.exe"

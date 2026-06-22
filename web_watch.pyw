@@ -4,7 +4,6 @@ import requests
 import time
 import schedule
 import threading
-import pyperclip
 from urllib.parse import urlsplit, parse_qs, parse_qsl, urlparse, urlunparse, urlencode
 from pywinauto import Desktop, Application
 import os
