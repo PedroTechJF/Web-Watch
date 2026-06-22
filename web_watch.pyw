@@ -1,6 +1,7 @@
 from win32 import win32gui
 import pyautogui
 import requests
+import pip_system_certs.wrapt_requests
 import time
 import schedule
 import threading
