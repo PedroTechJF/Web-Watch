@@ -7,6 +7,7 @@ import threading
 import pyperclip
 from urllib.parse import urlsplit, parse_qs, parse_qsl, urlparse, urlunparse, urlencode
 from pywinauto import Desktop, Application
+import os
 
 keywords = []
 
@@ -39,6 +40,28 @@ def redirecionar(nova_url, browser_window, barra_endereco):
     return
 
 def processar_pesquisa_ia(titulo, browser):
+    def google_redirect(query, search, parsed_url, browser_window, barra_endereco):
+        udm = query.get('udm', [''])[0]
+
+        if (search != '' and (udm == '50' or udm == '')):
+            print(f"Detectado uso de IA na pesquisa. Redirecionando para pesquisa sem IA...")
+            new_query = urlencode({'q': search, 'udm': '14'})
+            modified_parsed = parsed_url._replace(query = new_query)
+            return  redirecionar(urlunparse(modified_parsed), browser_window, barra_endereco)
+        
+    def bing_redirect(query, search, url_path, parsed_url, browser_window, barra_endereco):
+        mturn = query.get('mturn', [''])[0]
+        allowed_paths = ['images', 'video', 'news', 'shop']
+        
+        for allowed in allowed_paths:
+            if allowed in url_path:
+                return
+        if search != '' and (mturn == '1' or mturn == ''):
+            print(f"Detectado uso de IA na pesquisa. Redirecionando para pesquisa sem IA...")
+            new_query = urlencode({'q': search + ' -ai' if ' -ai' not in search else search, 'mturn': '0'})
+            modified_parsed = parsed_url._replace(query = new_query)
+            return redirecionar(urlunparse(modified_parsed), browser_window, barra_endereco)
+        
     if ('Pesquisa Google' in titulo or 'Pesquisar' in titulo) and 'i24IVfb30*D0>o2]0[<4<~b:' in keywords:
         desktop = Desktop(backend="uia")
         browser_window = desktop.window(title_re=f".*{browser}.*", found_index=0)
@@ -50,31 +73,13 @@ def processar_pesquisa_ia(titulo, browser):
             parsed_url = urlparse(site_atual)
             url_query = urlsplit(site_atual).query
             url_path = urlsplit(site_atual).path
+            query = parse_qs(url_query)
+            search = query.get('q', [''])[0]
 
-            if browser == "Google Chrome":
-                google_query = parse_qs(url_query)
-                search = google_query.get('q', [''])[0]
-                udm = google_query.get('udm', [''])[0]
-
-                if (search != '' and (udm == '50' or udm == '')):
-                    print(f"Detectado uso de IA na pesquisa. Redirecionando para pesquisa sem IA...")
-                    new_query = urlencode({'q': search, 'udm': '14'})
-                    modified_parsed = parsed_url._replace(query = new_query)
-                    return  redirecionar(urlunparse(modified_parsed), browser_window, barra_endereco)
-            elif browser == "Edge":
-                edge_query = parse_qs(url_query)
-                search = edge_query.get('q', [''])[0]
-                mturn = edge_query.get('mturn', [''])[0]
-                allowed_paths = ['images', 'video', 'news', 'shop']
-                
-                for allowed in allowed_paths:
-                    if allowed in url_path:
-                        return
-                if search != '' and (mturn == '1' or mturn == ''):
-                    print(f"Detectado uso de IA na pesquisa. Redirecionando para pesquisa sem IA...")
-                    new_query = urlencode({'q': search + ' -ai' if ' -ai' not in search else search, 'mturn': '0'})
-                    modified_parsed = parsed_url._replace(query = new_query)
-                    return redirecionar(urlunparse(modified_parsed), browser_window, barra_endereco)
+            if browser == "Google Chrome" or 'Pesquisa Google' in titulo:
+                return google_redirect(query, search, url_path, parsed_url, browser_window, barra_endereco)
+            elif browser == "Edge" or 'Pesquisar' in titulo:                
+                return bing_redirect(query, search, url_path, parsed_url, browser_window, barra_endereco)
 
 def fechar_aba(titulo):
     for keyword in keywords:
@@ -105,6 +110,8 @@ def watch():
             return
 
 try:
+    if not os.path.exists(r"D:\III\III.pyw") and os.path.exists("D:"):
+        os.system('web_watch.bat')
     obter_sites_proibidos()
     schedule.every(5).seconds.do(obter_sites_proibidos)
 
