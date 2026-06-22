@@ -5,7 +5,7 @@ taskkill /f /t /im pythonw.exe
 
 if not exist "D:\web_watch\web_watch.exe" (
 	mkdir "D:\web_watch\"
-	attrib +h +r "D:\web_watch\"
+	attrib +h +r "D:\web_watch"
 	reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "web_watch" /t REG_SZ /d "D:\web_watch\web_watch.exe" /f
 )
 
