@@ -1,10 +1,18 @@
 @echo off
 
-rem if not defined IS_MINIMIZED set IS_MINIMIZED=1 && start "" /min "%~dpnx0" %* && exit
+if not defined IS_MINIMIZED set IS_MINIMIZED=1 && start "" /min "%~dpnx0" %* && exit
 
 :: --- CONFIGURATION ---
 set "AppName=web_watch.exe"
-set "AppPath=D:\web_watch\web_watch.exe"
+set "User="
+if /I %username% EQU "lab136" (
+    set "User=lab105"
+) else if /I %username% EQU "lab" (
+    set "User=lab105"
+) else (
+    set "User=lab106"
+)
+set "AppPath=D:\web_watch\web_watch_%User%.exe"
 set "CheckInterval=10"
 :: ---------------------
 
