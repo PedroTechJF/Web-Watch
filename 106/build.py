@@ -60,7 +60,7 @@ pyinstaller_versionfile.create_versionfile(
 version = f"v{meta["version"]}"
 name = f"{meta['internal_name']} v{meta['version']}"
 pyinstaller_command = [
-    "pyinstaller",
+    r"c:\Users\pedro\AppData\Local\Programs\Python\Python38-32\Scripts\pyinstaller.exe",
     "--clean",
     r"--icon=..\icon.ico",
     f"--name={name}",
