@@ -12,7 +12,7 @@ if /I "%username%"=="lab136" (
 set "AppName=Web Watch - %Version%.exe"
 
 taskkill /f /t /im "%AppName%"
-timeout /t 2
+timeout /t 2 > NUL
 
 rmdir /q /s "D:\web_watch\"
 mkdir "D:\web_watch\"
@@ -23,8 +23,6 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "Web Watch" /t R
 
 del /f /q "C:\Users\%username%\%AppName%"
 
-cd /d "D:\web_watch\"
+start "" cmd /c "D:\web_watch\%AppName%" && exit
 
-start "" /b cmd /c "%AppName%"
-taskkill /f /im "cmd.exe"
 exit
