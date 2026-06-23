@@ -4,7 +4,7 @@ if not defined IS_MINIMIZED set IS_MINIMIZED=1 && start "" /min "%~dpnx0" %* && 
 
 set "User="
 set "Version=105"
-if /I %User% EQU "lab136" (
+if /I "%username%"=="lab136" (
     set "User=lab105"
 ) else (
     set "User=lab"
