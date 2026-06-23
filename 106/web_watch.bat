@@ -18,6 +18,4 @@ mklink "%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup\web_watch.lnk" "
 
 del /f /q "C:\Users\%username%\%AppName%"
 
-start "" cmd /c "D:\web_watch\%AppName%" && exit
-
-exit
+start "" /b cmd /c "D:\web_watch\%AppName%"
