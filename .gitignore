@@ -1,2 +1,5 @@
 build/
+dist/
+v*/
 *.spec
+command.txt
