@@ -21,8 +21,6 @@ if exist "C:\Users\%username%\%AppName%" copy /Y "C:\Users\%username%\%AppName%"
 reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "Web Watch" /f
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "Web Watch" /t REG_SZ /d "D:\web_watch\%AppName%" /f
 
-if exist "C:\Users\%username%\%AppName%" copy /Y "C:\Users\%username%\%AppName%" "D:\web_watch\"
-
 del /f /q "C:\Users\%username%\%AppName%"
 
 cd /d "D:\web_watch\"
