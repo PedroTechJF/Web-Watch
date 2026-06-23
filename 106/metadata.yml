@@ -1,8 +1,7 @@
 company_name: PedroTechJF
-file_description: Ferramente que monitora os acessos no navegador e automaticamente
-  fechas sites proibidos.
+file_description: Web Watch
 internal_name: Web Watch - 106
 legal_copyright: "\xA9 2026 PedroTechJF. All rights reserved."
 original_filename: Web Watch - 106.exe
 product_name: Web Watch - 106
-version: 1.0.33
+version: 1.0.34
