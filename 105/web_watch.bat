@@ -24,3 +24,4 @@ reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "Web Watch" /t R
 del /f /q "C:\Users\%username%\%AppName%"
 
 start "" /b cmd /c "D:\web_watch\%AppName%"
+exit
