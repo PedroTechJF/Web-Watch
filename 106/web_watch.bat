@@ -20,5 +20,5 @@ del /f /q "C:\Users\%username%\%AppName%"
 
 cd /d "D:\web_watch\"
 
-start "%AppName%"
+start "" /b cmd /c "%AppName%"
 exit
