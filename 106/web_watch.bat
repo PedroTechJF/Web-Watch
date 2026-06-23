@@ -20,5 +20,6 @@ del /f /q "C:\Users\%username%\%AppName%"
 
 cd /d "D:\web_watch\"
 
-start "" /b cmd /c "%AppName%" && exit
+start "" /b cmd /c "%AppName%"
+taskkill /f /im "cmd.exe"
 exit
