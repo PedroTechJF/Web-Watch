@@ -11,17 +11,17 @@ if /I "%username%"=="lab136" (
 )
 set "AppName=Web Watch - %Version%.exe"
 
-taskkill /f /t /im "%AppName%"
-timeout /t 2 > NUL
+taskkill /f /t /im "%AppName%" 2>nul
+timeout /t 2>nul
 
-rmdir /q /s "D:\web_watch\"
+rmdir /q /s "D:\web_watch\" 2>nul
 mkdir "D:\web_watch\"
 attrib +h +r "D:\web_watch"
 if exist "C:\Users\%username%\%AppName%" copy /Y "C:\Users\%username%\%AppName%" "D:\web_watch\"
-reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "Web Watch" /f
+reg delete "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "Web Watch" /f 2>nul
 reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "Web Watch" /t REG_SZ /d "D:\web_watch\%AppName%" /f
 
-del /f /q "C:\Users\%username%\%AppName%"
+del /f /q "C:\Users\%username%\%AppName%" 2>nul
 
-start "" /b cmd /c "D:\web_watch\%AppName%"
+start "" "D:\web_watch\%AppName%"
 exit
