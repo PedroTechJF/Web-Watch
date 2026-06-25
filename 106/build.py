@@ -39,7 +39,7 @@ def update_version(meta):
     with open("metadata.yml", "w", encoding="utf-8") as f:
         yaml.dump(meta, f)
     
-    os.makedirs(f"v{meta["version"]}", exist_ok=True)
+    os.makedirs(rf"releases\v{meta["version"]}", exist_ok=True)
     os.makedirs(f"latest", exist_ok=True)
     time.sleep(1)
     return read_metadata()
@@ -62,23 +62,29 @@ name = f"{meta['internal_name']} v{meta['version']}"
 pyinstaller_command = [
     r"c:\Users\pedro\AppData\Local\Programs\Python\Python38-32\Scripts\pyinstaller.exe",
     "--clean",
-    r"--icon=..\icon.ico",
+    r"--icon=..\..\icon.ico",
     f"--name={name}",
     "--add-data",
-    r"..\web_watch.bat;.",
+    r"..\..\web_watch.bat;.",
     "--add-data",
-    r"..\web_watch - autorun.bat;.",
+    r"..\..\web_watch - autorun.bat;.",
     "--onefile",
     "--noconfirm",
-    f"--version-file=..\\{version_file_path}",
-    f"--distpath={version}/dist",
-    f"--workpath={version}/build",
-    f"--specpath={version}",
+    f"--version-file=..\\..\\{version_file_path}",
+    f"--distpath=releases/{version}/dist",
+    f"--workpath=releases/{version}/build",
+    f"--specpath=releases/{version}",
     "web_watch.pyw"
 ]
 
 print(f"Compilando a {version}...")
+
 subprocess.run(pyinstaller_command, check=True, capture_output=False)
-shutil.copy(f"./{version}/dist/{name}.exe", f"latest/{meta['internal_name']}.exe")
-shutil.make_archive(f"./latest/{meta['internal_name']}", "zip", f"./latest/")
+
+shutil.copy(f"./releases/{version}/dist/{name}.exe", f"./latest/{meta['internal_name']}.exe")
+os.makedirs(f"./latest/.tmp/", exist_ok=True)
+shutil.copy(f"./latest/{meta['internal_name']}.exe", f"./latest/.tmp/{meta['internal_name']}.exe")
+shutil.make_archive(f"./latest/{meta['internal_name']}", "zip", f"./latest/.tmp/")
+shutil.rmtree(f"./latest/.tmp/")
+
 print("Compilado com sucesso!")

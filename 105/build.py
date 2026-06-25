@@ -78,7 +78,13 @@ pyinstaller_command = [
 ]
 
 print(f"Compilando a {version}...")
+
 subprocess.run(pyinstaller_command, check=True, capture_output=False)
+
 shutil.copy(f"./releases/{version}/dist/{name}.exe", f"./latest/{meta['internal_name']}.exe")
-shutil.make_archive(f"./latest/{meta['internal_name']}", "zip", f"./latest/")
+os.makedirs(f"./latest/.tmp/", exist_ok=True)
+shutil.copy(f"./latest/{meta['internal_name']}.exe", f"./latest/.tmp/{meta['internal_name']}.exe")
+shutil.make_archive(f"./latest/{meta['internal_name']}", "zip", f"./latest/.tmp/")
+shutil.rmtree(f"./latest/.tmp/")
+
 print("Compilado com sucesso!")
