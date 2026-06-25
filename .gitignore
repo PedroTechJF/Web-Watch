@@ -3,3 +3,4 @@ dist/
 v*/
 *.spec
 command.txt
+__pycache__/

@@ -8,6 +8,7 @@ from urllib.parse import urlsplit, parse_qs, parse_qsl, urlparse, urlunparse, ur
 from pywinauto import Desktop, Application # Biblioteca para controlar o Windows
 import os # Biblioteca para trabalhar com arquivos
 import sys # Biblioteca para trabalhar com arquivos
+from block_input import block_inputs # Biblioteca para bloquear o teclado e o mouse
 
 keywords = [] # Lista para armazenar os sites proibidos
 
@@ -44,6 +45,8 @@ def redirecionar(nova_url, browser_window, barra_endereco):
     time.sleep(0.2)
     barra_endereco.set_edit_text(nova_url)
     time.sleep(0.2)
+    block_inputs(True)
+    time.sleep(0.2)
     browser_window.type_keys('{ENTER}')
     time.sleep(2)
     return
@@ -59,8 +62,9 @@ def processar_pesquisa_ia(titulo, browser):
         udm = query.get('udm', [''])[0] # Parametro do Google que muda a pesquisa ('' = Tudo, '14' = Web, '50' = IA)
 
         if (search != '' and (udm == '50' or udm == '')):
+            block_inputs()
             print(f"Detectado uso de IA na pesquisa. Redirecionando para pesquisa sem IA...")
-            new_query = urlencode({'q': search, 'udm': '14'}) # Cria uma nova query sem IA
+            new_query = urlencode({'q': search, 'udm': '14', 't': time.time()}) # Cria uma nova query sem IA
             modified_parsed = parsed_url._replace(query = new_query)
             return redirecionar(urlunparse(modified_parsed), browser_window, barra_endereco) # Redireciona para a nova URL
         
@@ -75,8 +79,9 @@ def processar_pesquisa_ia(titulo, browser):
             if allowed in url_path:
                 return
         if search != '' and (mturn == '1' or mturn == ''):
+            block_inputs()
             print(f"Detectado uso de IA na pesquisa. Redirecionando para pesquisa sem IA...")
-            new_query = urlencode({'q': search + ' -ai' if ' -ai' not in search else search, 'mturn': '0'}) # Cria uma nova query sem IA
+            new_query = urlencode({'q': search + ' -ai' if ' -ai' not in search else search, 'mturn': '0', 't': time.time()}) # Cria uma nova query sem IA
             modified_parsed = parsed_url._replace(query = new_query)
             return redirecionar(urlunparse(modified_parsed), browser_window, barra_endereco) # Redireciona para a nova URL
         
