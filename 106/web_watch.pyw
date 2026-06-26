@@ -9,6 +9,7 @@ from pywinauto import Desktop, Application # Biblioteca para controlar o Windows
 import os # Biblioteca para trabalhar com arquivos
 import sys # Biblioteca para trabalhar com arquivos
 from block_input import block_inputs # Biblioteca para bloquear o teclado e o mouse
+import pynput # Biblioteca para bloquear o teclado e o mouse
 
 keywords = [] # Lista para armazenar os sites proibidos
 
